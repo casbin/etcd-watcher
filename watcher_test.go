@@ -27,6 +27,7 @@ func updateCallback(rev string) {
 
 func TestWatcher(t *testing.T) {
 	// updater represents the Casbin enforcer instance that changes the policy in DB.
+	// Use the endpoint of etcd cluster as parameter.
 	updater := NewWatcher("http://127.0.0.1:2379")
 
 	// listener represents any other Casbin enforcer instance that watches the change of policy in DB.
@@ -47,6 +48,7 @@ func TestWatcher(t *testing.T) {
 
 func TestWithEnforcer(t *testing.T) {
 	// Initialize the watcher.
+	// Use the endpoint of etcd cluster as parameter.
 	w := NewWatcher("http://127.0.0.1:2379")
 
 	// Initialize the enforcer.
