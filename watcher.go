@@ -38,7 +38,7 @@ func finalizer(w *Watcher) {
 	w.running = false
 }
 
-// NewAdapter is the constructor for Watcher.
+// NewWatcher is the constructor for Watcher.
 // endpoint is the endpoint for etcd clusters.
 func NewWatcher(endpoint string) persist.Watcher {
 	w := &Watcher{}
