@@ -40,14 +40,17 @@ func finalizer(w *Watcher) {
 
 // NewWatcher is the constructor for Watcher.
 // endpoint is the endpoint for etcd clusters.
-func NewWatcher(endpoint string) persist.Watcher {
+func NewWatcher(endpoint string) (persist.Watcher, error) {
 	w := &Watcher{}
 	w.endpoint = endpoint
 	w.running = true
 	w.callback = nil
 
 	// Create the client.
-	w.createClient()
+	err := w.createClient()
+	if err != nil {
+		return nil, err
+	}
 
 	// Call the destructor when the object is released.
 	runtime.SetFinalizer(w, finalizer)
