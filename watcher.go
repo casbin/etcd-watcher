@@ -54,7 +54,12 @@ func NewWatcher(endpoint string) persist.Watcher {
 
 	go w.startWatch()
 
-	return w
+	return w, nil
+}
+
+// Close closes the Watcher.
+func (w *Watcher) Close() {
+	finalizer(w)
 }
 
 func (w *Watcher) createClient() error {
