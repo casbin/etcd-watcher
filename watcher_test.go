@@ -15,14 +15,14 @@
 package etcdwatcher
 
 import (
+	"log"
 	"testing"
 
 	"github.com/casbin/casbin"
-	"github.com/casbin/casbin/util"
 )
 
 func updateCallback(rev string) {
-	util.LogPrint("New revision detected:", rev)
+	log.Println("New revision detected:", rev)
 }
 
 func TestWatcher(t *testing.T) {

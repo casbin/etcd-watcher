@@ -16,20 +16,20 @@ package etcdwatcher
 
 import (
 	"context"
+	"log"
 	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/casbin/casbin/persist"
-	"github.com/casbin/casbin/util"
-	"github.com/coreos/etcd/client"
+	"go.etcd.io/etcd/client"
+	"go.etcd.io/etcd/clientv3"
 )
 
 type Watcher struct {
 	endpoint string
-	client client.Client
-	kapi client.KeysAPI
-	running bool
+	client   *clientv3.Client
+	running  bool
 	callback func(string)
 }
 
@@ -58,21 +58,18 @@ func NewWatcher(endpoint string) persist.Watcher {
 }
 
 func (w *Watcher) createClient() error {
-	cfg := client.Config{
-		Endpoints:               []string{w.endpoint},
-		Transport:               client.DefaultTransport,
+	cfg := clientv3.Config{
+		Endpoints: []string{w.endpoint},
 		// set timeout per request to fail fast when the target endpoint is unavailable
-		HeaderTimeoutPerRequest: time.Second,
+		DialKeepAliveTimeout: time.Second * 10,
+		DialTimeout:          time.Second * 30,
 	}
 
-	c, err := client.New(cfg)
+	c, err := clientv3.New(cfg)
 	if err != nil {
 		return err
 	}
-
-	kapi := client.NewKeysAPI(c)
 	w.client = c
-	w.kapi = kapi
 	return nil
 }
 
@@ -89,50 +86,48 @@ func (w *Watcher) SetUpdateCallback(callback func(string)) error {
 // Enforcer.AddPolicy(), Enforcer.RemovePolicy(), etc.
 func (w *Watcher) Update() error {
 	rev := 0
-
 	// Get "/casbin" key's value.
-	resp, err := w.kapi.Get(context.Background(), "/casbin", nil)
+	resp, err := w.client.Get(context.Background(), "/casbin")
 	if err != nil {
-		if err.(client.Error).Code != client.ErrorCodeKeyNotFound {
+		log.Println(err)
+		switch err := err.(type) {
+		case client.Error:
+			if err.Code != client.ErrorCodeKeyNotFound {
+				return err
+			}
+		case *client.ClusterError:
 			return err
 		}
 	} else {
-		rev, err = strconv.Atoi(resp.Node.Value)
-		if err != nil {
-			return err
+		if resp.Count != 0 {
+			rev, err = strconv.Atoi(string(resp.Kvs[0].Value))
+			if err != nil {
+				return err
+			}
+			log.Println("Get revision: ", rev)
+			rev += 1
 		}
-		util.LogPrint("Get revision: ", rev)
-		rev += 1
 	}
 
 	newRev := strconv.Itoa(rev)
 
 	// Set "/casbin" key with new revision value.
-	util.LogPrint("Set revision: ", newRev)
-	resp, err = w.kapi.Set(context.Background(), "/casbin", newRev, nil)
+	log.Println("Set revision: ", newRev)
+	_, err = w.client.Put(context.TODO(), "/casbin", newRev)
 	return err
 }
 
 // startWatch is a goroutine that watches the policy change.
 func (w *Watcher) startWatch() error {
-	watcher := w.kapi.Watcher("/casbin", &client.WatcherOptions{Recursive: false})
-	for {
-		if !w.running {
-			return nil
-		}
-
-		res, err := watcher.Next(context.Background())
-		if err != nil {
-			return err
-			break
-		}
-
-		if res.Action == "set" || res.Action == "update" {
+	watcher := w.client.Watch(context.Background(), "/casbin")
+	for res := range watcher {
+		t := res.Events[0]
+		if t.IsCreate() || t.IsModify() {
 			if w.callback != nil {
-				w.callback(res.Node.Value)
+				w.callback(string(t.Kv.Value))
 			}
 		}
-	}
 
+	}
 	return nil
 }

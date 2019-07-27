@@ -13,13 +13,14 @@ Etcd Watcher is the [Etcd](https://github.com/coreos/etcd) watcher for [Casbin](
 package main
 
 import (
+    "log"
+
     "github.com/casbin/casbin"
-    "github.com/casbin/casbin/util"
     "github.com/casbin/etcd-watcher"
 )
 
 func updateCallback(rev string) {
-    util.LogPrint("New revision detected:", rev)
+    log.Println("New revision detected:", rev)
 }
 
 func main() {
