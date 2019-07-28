@@ -7,6 +7,9 @@ go:
 
 before_install:
   - go get github.com/mattn/goveralls
+  - go get go.etcd.io/etcd
+  - cd $HOME/gopath/src/go.etcd.io/etcd
+  - nohup go run main.go
 
 script:
   - $HOME/gopath/bin/goveralls -service=travis-ci
