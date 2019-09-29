@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"github.com/casbin/casbin/persist"
-	"go.etcd.io/etcd/client"
-	"go.etcd.io/etcd/clientv3"
+	"github.com/etcd-io/etcd/client"
+	"github.com/etcd-io/etcd/clientv3"
 )
 
 type Watcher struct {
