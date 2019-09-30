@@ -27,7 +27,7 @@ import (
 )
 
 type Watcher struct {
-	endpoint string
+	endpoint []string
 	client   *clientv3.Client
 	running  bool
 	callback func(string)
@@ -40,9 +40,9 @@ func finalizer(w *Watcher) {
 
 // NewWatcher is the constructor for Watcher.
 // endpoint is the endpoint for etcd clusters.
-func NewWatcher(endpoint string) (persist.Watcher, error) {
+func NewWatcher(endpoints []string) (persist.Watcher, error) {
 	w := &Watcher{}
-	w.endpoint = endpoint
+	w.endpoint = endpoints
 	w.running = true
 	w.callback = nil
 
@@ -67,7 +67,7 @@ func (w *Watcher) Close() {
 
 func (w *Watcher) createClient() error {
 	cfg := clientv3.Config{
-		Endpoints: []string{w.endpoint},
+		Endpoints: w.endpoint,
 		// set timeout per request to fail fast when the target endpoint is unavailable
 		DialKeepAliveTimeout: time.Second * 10,
 		DialTimeout:          time.Second * 30,
@@ -112,7 +112,7 @@ func (w *Watcher) Update() error {
 			if err != nil {
 				return err
 			}
-			log.Println("Get revision: ", rev)
+			//log.Println("Get revision: ", rev)
 			rev += 1
 		}
 	}
@@ -120,7 +120,7 @@ func (w *Watcher) Update() error {
 	newRev := strconv.Itoa(rev)
 
 	// Set "/casbin" key with new revision value.
-	log.Println("Set revision: ", newRev)
+	//log.Println("Set revision: ", newRev)
 	_, err = w.client.Put(context.TODO(), "/casbin", newRev)
 	return err
 }
