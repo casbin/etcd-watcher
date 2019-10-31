@@ -1,0 +1,11 @@
+package: .
+import:
+- package: github.com/casbin/casbin
+  version: 1.9.1
+  subpackages:
+  - persist
+- package: github.com/etcd-io/etcd
+  version: 3.3.13
+  subpackages:
+  - client
+  - clientv3

@@ -1,0 +1,108 @@
+hash: 52d1070e2c8c1dbad82d71fee215276d6b2e690eeb0f89f3021c4ef977515bbc
+updated: 2019-10-31T18:49:33.8952257+05:30
+imports:
+- name: github.com/casbin/casbin
+  version: aaed1b7a7eac65d37ec4e15e308429fdf0bd6a9e
+  subpackages:
+  - config
+  - effect
+  - errors
+  - log
+  - model
+  - persist
+  - persist/file-adapter
+  - rbac
+  - rbac/default-role-manager
+  - util
+- name: github.com/coreos/etcd
+  version: 2c5162af5c096406fb991b4a15761d186b18afbf
+  subpackages:
+  - auth/authpb
+  - etcdserver/api/v3rpc/rpctypes
+  - etcdserver/etcdserverpb
+  - mvcc/mvccpb
+  - pkg/pathutil
+  - pkg/srv
+  - pkg/types
+  - version
+- name: github.com/coreos/go-semver
+  version: 8ab6407b697782a06568d4b7f1db25550ec2e4c6
+  subpackages:
+  - semver
+- name: github.com/etcd-io/etcd
+  version: 98d308426819d892e149fe45f6fd542464cb1f9d
+  subpackages:
+  - client
+  - clientv3
+- name: github.com/gogo/protobuf
+  version: 342cbe0a04158f6dcb03ca0079991a51a4248c02
+  subpackages:
+  - gogoproto
+  - proto
+  - protoc-gen-gogo/descriptor
+- name: github.com/golang/protobuf
+  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
+  subpackages:
+  - jsonpb
+  - proto
+  - ptypes
+  - ptypes/any
+  - ptypes/duration
+  - ptypes/timestamp
+- name: github.com/json-iterator/go
+  version: f2b4162afba35581b6d4a50d3b8f34e33c144682
+- name: github.com/Knetic/govaluate
+  version: 9aa49832a739dcd78a5542ff189fb82c3e423116
+- name: github.com/modern-go/concurrent
+  version: bacd9c7ef1dd9b15be4a9909b8ac7a4e313eec94
+- name: github.com/modern-go/reflect2
+  version: 05fbef0ca5da472bbf96c9322b84a53edc03c9fd
+- name: go.etcd.io/etcd
+  version: bbe1e78e6242a57d54c4b96d8c49ea1e094c3cbb
+  subpackages:
+  - auth/authpb
+  - mvcc/mvccpb
+  - pkg/types
+- name: golang.org/x/net
+  version: 66aacef3dd8a676686c7ae3716979581e8b03c47
+  subpackages:
+  - context
+  - http2
+  - http2/hpack
+  - idna
+  - internal/timeseries
+  - lex/httplex
+  - trace
+- name: golang.org/x/text
+  version: b19bf474d317b857955b12035d2c5acb57ce8b01
+  subpackages:
+  - secure/bidirule
+  - transform
+  - unicode/bidi
+  - unicode/norm
+- name: google.golang.org/genproto
+  version: 09f6ed296fc66555a25fe4ce95173148778dfa85
+  subpackages:
+  - googleapis/rpc/status
+- name: google.golang.org/grpc
+  version: 5b3c4e850e90a4cf6a20ebd46c8b32a0a3afcb9e
+  subpackages:
+  - balancer
+  - codes
+  - connectivity
+  - credentials
+  - grpclb/grpc_lb_v1/messages
+  - grpclog
+  - health
+  - health/grpc_health_v1
+  - internal
+  - keepalive
+  - metadata
+  - naming
+  - peer
+  - resolver
+  - stats
+  - status
+  - tap
+  - transport
+testImports: []
