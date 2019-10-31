@@ -27,10 +27,11 @@ import (
 )
 
 type Watcher struct {
-	endpoint string
+	endpoint []string
 	client   *clientv3.Client
 	running  bool
 	callback func(string)
+	keyName  string
 }
 
 // finalizer is the destructor for Watcher.
@@ -40,11 +41,12 @@ func finalizer(w *Watcher) {
 
 // NewWatcher is the constructor for Watcher.
 // endpoint is the endpoint for etcd clusters.
-func NewWatcher(endpoint string) (persist.Watcher, error) {
+func NewWatcher(endpoint []string, keyName string) (persist.Watcher, error) {
 	w := &Watcher{}
 	w.endpoint = endpoint
 	w.running = true
 	w.callback = nil
+	w.keyName = keyName
 
 	// Create the client.
 	err := w.createClient()
@@ -67,7 +69,7 @@ func (w *Watcher) Close() {
 
 func (w *Watcher) createClient() error {
 	cfg := clientv3.Config{
-		Endpoints: []string{w.endpoint},
+		Endpoints: w.endpoint,
 		// set timeout per request to fail fast when the target endpoint is unavailable
 		DialKeepAliveTimeout: time.Second * 10,
 		DialTimeout:          time.Second * 30,
@@ -94,8 +96,7 @@ func (w *Watcher) SetUpdateCallback(callback func(string)) error {
 // Enforcer.AddPolicy(), Enforcer.RemovePolicy(), etc.
 func (w *Watcher) Update() error {
 	rev := 0
-	// Get "/casbin" key's value.
-	resp, err := w.client.Get(context.Background(), "/casbin")
+	resp, err := w.client.Get(context.Background(), w.keyName)
 	if err != nil {
 		log.Println(err)
 		switch err := err.(type) {
@@ -119,15 +120,14 @@ func (w *Watcher) Update() error {
 
 	newRev := strconv.Itoa(rev)
 
-	// Set "/casbin" key with new revision value.
 	log.Println("Set revision: ", newRev)
-	_, err = w.client.Put(context.TODO(), "/casbin", newRev)
+	_, err = w.client.Put(context.TODO(), w.keyName, newRev)
 	return err
 }
 
 // startWatch is a goroutine that watches the policy change.
 func (w *Watcher) startWatch() error {
-	watcher := w.client.Watch(context.Background(), "/casbin")
+	watcher := w.client.Watch(context.Background(), w.keyName)
 	for res := range watcher {
 		t := res.Events[0]
 		if t.IsCreate() || t.IsModify() {
