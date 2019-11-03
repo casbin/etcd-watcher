@@ -16,13 +16,13 @@ package etcdwatcher
 
 import (
 	"context"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 	"log"
 	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/casbin/casbin/persist"
-	"github.com/etcd-io/etcd/client"
 	"github.com/etcd-io/etcd/clientv3"
 )
 
@@ -98,13 +98,7 @@ func (w *Watcher) Update() error {
 	rev := 0
 	resp, err := w.client.Get(context.Background(), w.keyName)
 	if err != nil {
-		log.Println(err)
-		switch err := err.(type) {
-		case client.Error:
-			if err.Code != client.ErrorCodeKeyNotFound {
-				return err
-			}
-		case *client.ClusterError:
+		if err != rpctypes.ErrKeyNotFound {
 			return err
 		}
 	} else {
