@@ -7,8 +7,8 @@ go:
 
 before_install:
   - go get github.com/mattn/goveralls
-  - go get github.com/etcd-io/etcd
-  - cd $HOME/gopath/src/github.com/etcd-io/etcd
+  - go get go.etcd.io/etcd/clientv3
+  - cd $HOME/gopath/src/go.etcd.io/etcd/
   - nohup go run main.go
 
 script:
