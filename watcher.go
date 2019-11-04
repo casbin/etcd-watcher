@@ -16,14 +16,14 @@ package etcdwatcher
 
 import (
 	"context"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 	"log"
 	"runtime"
 	"strconv"
 	"time"
 
 	"github.com/casbin/casbin/persist"
-	"github.com/etcd-io/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 )
 
 type Watcher struct {
