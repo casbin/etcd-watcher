@@ -27,11 +27,11 @@ func updateCallback(rev string) {
 
 func TestWatcher(t *testing.T) {
 	// updater represents the Casbin enforcer instance that changes the policy in DB.
-	// Use the endpoint of etcd cluster as parameter.
-	updater, _ := NewWatcher("http://127.0.0.1:2379")
+	// Use the endpoints of etcd cluster as parameter.
+	updater, _ := NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
 
 	// listener represents any other Casbin enforcer instance that watches the change of policy in DB.
-	listener, _ := NewWatcher("http://127.0.0.1:2379")
+	listener, _ := NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
 	// listener should set a callback that gets called when policy changes.
 	listener.SetUpdateCallback(updateCallback)
 
@@ -48,8 +48,8 @@ func TestWatcher(t *testing.T) {
 
 func TestWithEnforcer(t *testing.T) {
 	// Initialize the watcher.
-	// Use the endpoint of etcd cluster as parameter.
-	w, _ := NewWatcher("http://127.0.0.1:2379")
+	// Use the endpoints of etcd cluster as parameter.
+	w, _ := NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
 
 	// Initialize the enforcer.
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")

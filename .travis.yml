@@ -1,15 +1,19 @@
 language: go
 
-sudo: false
+sudo: required
 
 go:
   - tip
 
+service:
+  - docker
+
 before_install:
+  - echo $TRAVIS_GO_VERSION
   - go get github.com/mattn/goveralls
-  - go get github.com/etcd-io/etcd
-  - cd $HOME/gopath/src/github.com/etcd-io/etcd
-  - nohup go run main.go
+  - go get go.etcd.io/etcd/clientv3
+  - docker pull quay.io/coreos/etcd:v3.3.10
+  - docker run -d -p 2379:2379 quay.io/coreos/etcd:v3.3.10 etcd --name casbin --listen-client-urls http://0.0.0.0:2379 --advertise-client-urls http://0.0.0.0:2379
 
 script:
   - $HOME/gopath/bin/goveralls -service=travis-ci
