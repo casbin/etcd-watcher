@@ -26,6 +26,8 @@ func updateCallback(rev string) {
 func main() {
     // Initialize the watcher.
     // Use the endpoint of etcd cluster as parameter.
+    // if you use version v0.0.1    
+    // w, _ := etcdwatcher.NewWatcher("http://127.0.0.1:2379")
     w, _ := etcdwatcher.NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
     
     // Initialize the enforcer.
