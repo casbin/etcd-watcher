@@ -18,7 +18,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/casbin/casbin"
+	"github.com/casbin/casbin/v2"
 )
 
 func updateCallback(rev string) {
@@ -33,7 +33,7 @@ func TestWatcher(t *testing.T) {
 	// listener represents any other Casbin enforcer instance that watches the change of policy in DB.
 	listener, _ := NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
 	// listener should set a callback that gets called when policy changes.
-	listener.SetUpdateCallback(updateCallback)
+	_ = listener.SetUpdateCallback(updateCallback)
 
 	// updater changes the policy, and sends the notifications.
 	err := updater.Update()
@@ -55,14 +55,17 @@ func TestWithEnforcer(t *testing.T) {
 	e, _ := casbin.NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
 
 	// Set the watcher for the enforcer.
-	e.SetWatcher(w)
+	_ = e.SetWatcher(w)
 
 	// By default, the watcher's callback is automatically set to the
 	// enforcer's LoadPolicy() in the SetWatcher() call.
 	// We can change it by explicitly setting a callback.
-	w.SetUpdateCallback(updateCallback)
+	_ = w.SetUpdateCallback(updateCallback)
 
 	// Update the policy to test the effect.
 	// You should see "[New revision detected: X]" in the log.
-	e.SavePolicy()
+	err := e.SavePolicy()
+	if err != nil {
+		t.Fail()
+	}
 }
