@@ -1,6 +1,6 @@
 module github.com/casbin/etcd-watcher
 
-go 1.13
+go 1.14
 
 require (
 	github.com/casbin/casbin/v2 v2.30.2

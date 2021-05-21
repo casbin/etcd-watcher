@@ -2,10 +2,8 @@ language: go
 
 sudo: required
 
-env:
-  - GO111MODULE=on
-
 go:
+  - "1.14"
   - tip
 
 service:
@@ -13,8 +11,9 @@ service:
 
 before_install:
   - echo $TRAVIS_GO_VERSION
+  - go get github.com/mattn/goveralls
   - docker pull quay.io/coreos/etcd:v3.3.10
   - docker run -d -p 2379:2379 quay.io/coreos/etcd:v3.3.10 etcd --name casbin --listen-client-urls http://0.0.0.0:2379 --advertise-client-urls http://0.0.0.0:2379
 
 script:
-  - make test
+  - $HOME/gopath/bin/goveralls -service=travis-ci
