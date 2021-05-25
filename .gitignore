@@ -15,6 +15,3 @@
 
 .idea/
 *.iml
-
-#vendor files
-vendor
