@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/casbin/casbin/persist"
+	"github.com/casbin/casbin/v2/persist"
 	"go.etcd.io/etcd/clientv3"
 	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 )
@@ -57,7 +57,9 @@ func NewWatcher(endpoints []string, keyName string) (persist.Watcher, error) {
 	// Call the destructor when the object is released.
 	runtime.SetFinalizer(w, finalizer)
 
-	go w.startWatch()
+	go func() {
+		_ = w.startWatch()
+	}()
 
 	return w, nil
 }
