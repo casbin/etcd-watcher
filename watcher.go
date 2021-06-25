@@ -22,13 +22,13 @@ import (
 	"time"
 
 	"github.com/casbin/casbin/v2/persist"
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
+	client "go.etcd.io/etcd/client/v3"
 )
 
 type Watcher struct {
 	endpoints []string
-	client    *clientv3.Client
+	client    *client.Client
 	running   bool
 	callback  func(string)
 	keyName   string
@@ -70,14 +70,14 @@ func (w *Watcher) Close() {
 }
 
 func (w *Watcher) createClient() error {
-	cfg := clientv3.Config{
+	cfg := client.Config{
 		Endpoints: w.endpoints,
 		// set timeout per request to fail fast when the target endpoints is unavailable
 		DialKeepAliveTimeout: time.Second * 10,
 		DialTimeout:          time.Second * 30,
 	}
 
-	c, err := clientv3.New(cfg)
+	c, err := client.New(cfg)
 	if err != nil {
 		return err
 	}
