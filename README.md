@@ -5,7 +5,7 @@ Etcd Watcher is the [Etcd](https://github.com/coreos/etcd) watcher for [Casbin](
 
 ## Installation
 
-    go get github.com/casbin/etcd-watcher
+    go get github.com/casbin/etcd-watcher/v2
 
 ## Simple Example
 
@@ -15,8 +15,8 @@ package main
 import (
     "log"
 
-    "github.com/casbin/casbin"
-    "github.com/casbin/etcd-watcher"
+    casbin "github.com/casbin/casbin/v2"
+    etcdwatcher "github.com/casbin/etcd-watcher/v2"
 )
 
 func updateCallback(rev string) {
@@ -26,7 +26,7 @@ func updateCallback(rev string) {
 func main() {
     // Initialize the watcher.
     // Use the endpoint of etcd cluster as parameter.
-    w, _ := etcdwatcher.NewWatcher("http://127.0.0.1:2379")
+    w, _ := etcdwatcher.NewWatcher([]string{"http://127.0.0.1:2379"}, "keyname")
     
     // Initialize the enforcer.
     e, _ := casbin.NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
