@@ -1,4 +1,4 @@
-module github.com/casbin/etcd-watcher
+module github.com/casbin/etcd-watcher/v2
 
 go 1.16
 
