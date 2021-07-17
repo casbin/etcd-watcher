@@ -19,6 +19,7 @@ import (
 	"log"
 	"runtime"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/casbin/casbin/v2/persist"
@@ -27,6 +28,8 @@ import (
 )
 
 type Watcher struct {
+	// lock for callback
+	lock      sync.RWMutex
 	endpoints []string
 	client    *client.Client
 	running   bool
@@ -89,6 +92,8 @@ func (w *Watcher) createClient() error {
 // when the policy in DB has been changed by other instances.
 // A classic callback is Enforcer.LoadPolicy().
 func (w *Watcher) SetUpdateCallback(callback func(string)) error {
+	w.lock.Lock()
+	defer w.lock.Unlock()
 	w.callback = callback
 	return nil
 }
@@ -127,9 +132,11 @@ func (w *Watcher) startWatch() error {
 	for res := range watcher {
 		t := res.Events[0]
 		if t.IsCreate() || t.IsModify() {
+			w.lock.RLock()
 			if w.callback != nil {
 				w.callback(string(t.Kv.Value))
 			}
+			w.lock.RUnlock()
 		}
 
 	}
