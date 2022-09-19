@@ -22,19 +22,19 @@ import (
 	"time"
 
 	"github.com/casbin/casbin/v2/persist"
-	"go.etcd.io/etcd/api/v3/v3rpc/rpctypes"
 	client "go.etcd.io/etcd/client/v3"
 )
 
 type Watcher struct {
 	// lock for callback
-	lock      sync.RWMutex
-	endpoints []string
-	client    *client.Client
-	running   bool
-	callback  func(string)
-	keyName   string
-	password  string
+	lock        sync.RWMutex
+	endpoints   []string
+	client      *client.Client
+	running     bool
+	callback    func(string)
+	keyName     string
+	password    string
+	lastSentRev int64
 }
 
 // finalizer is the destructor for Watcher.
@@ -106,25 +106,12 @@ func (w *Watcher) SetUpdateCallback(callback func(string)) error {
 // It is usually called after changing the policy in DB, like Enforcer.SavePolicy(),
 // Enforcer.AddPolicy(), Enforcer.RemovePolicy(), etc.
 func (w *Watcher) Update() error {
-	rev := 0
-	resp, err := w.client.Get(context.Background(), w.keyName)
+	w.lock.Lock()
+	defer w.lock.Unlock()
+	resp, err := w.client.Put(context.TODO(), w.keyName, "")
 	if err != nil {
-		if err != rpctypes.ErrKeyNotFound {
-			return err
-		}
-	} else {
-		if resp.Count != 0 {
-			rev, err = strconv.Atoi(string(resp.Kvs[0].Value))
-			if err != nil {
-				return err
-			}
-			rev += 1
-		}
+		w.lastSentRev = resp.Header.GetRevision()
 	}
-
-	newRev := strconv.Itoa(rev)
-
-	_, err = w.client.Put(context.TODO(), w.keyName, newRev)
 	return err
 }
 
@@ -135,12 +122,12 @@ func (w *Watcher) startWatch() error {
 		t := res.Events[0]
 		if t.IsCreate() || t.IsModify() {
 			w.lock.RLock()
-			if w.callback != nil {
-				w.callback(string(t.Kv.Value))
+			//ignore self update
+			if rev := t.Kv.ModRevision; rev > w.lastSentRev && w.callback != nil {
+				w.callback(strconv.FormatInt(rev, 10))
 			}
 			w.lock.RUnlock()
 		}
-
 	}
 	return nil
 }
