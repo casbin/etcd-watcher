@@ -109,7 +109,7 @@ func (w *Watcher) Update() error {
 	w.lock.Lock()
 	defer w.lock.Unlock()
 	resp, err := w.client.Put(context.TODO(), w.keyName, "")
-	if err != nil {
+	if err == nil {
 		w.lastSentRev = resp.Header.GetRevision()
 	}
 	return err
