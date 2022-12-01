@@ -15,10 +15,8 @@
 package etcdwatcher
 
 import (
-	"context"
 	"log"
 	"testing"
-	"time"
 
 	"github.com/casbin/casbin/v2"
 )
@@ -65,17 +63,9 @@ func TestWithEnforcer(t *testing.T) {
 	_ = w.SetUpdateCallback(updateCallback)
 
 	// Update the policy to test the effect.
-	// You should see nothing output because the etcd message is ignored by itself.
+	// You should see "[New revision detected: X]" in the log.
 	err := e.SavePolicy()
 	if err != nil {
 		t.Fail()
 	}
-
-	// Simulate the update from other instance.
-	// You should see "[New revision detected: X]" in the log.
-	_, err = w.(*Watcher).client.Put(context.TODO(), "/casbin", "")
-	if err != nil {
-		t.Fail()
-	}
-	time.Sleep(time.Millisecond * 100)
 }
