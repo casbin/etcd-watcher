@@ -30,6 +30,13 @@ func TestWatcher(t *testing.T) {
 	// Use the endpoints of etcd cluster as parameter.
 	updater, _ := NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
 
+	withConfigUpdater, _ := NewWatcherWithConfig(WatcherConfig{
+		Hosts: []string{"http://127.0.0.1:2379"},
+		Key:   "/casbin",
+		User:  "",
+		Pass:  "",
+	})
+
 	// listener represents any other Casbin enforcer instance that watches the change of policy in DB.
 	listener, _ := NewWatcher([]string{"http://127.0.0.1:2379"}, "/casbin")
 	// listener should set a callback that gets called when policy changes.
@@ -37,6 +44,11 @@ func TestWatcher(t *testing.T) {
 
 	// updater changes the policy, and sends the notifications.
 	err := updater.Update()
+	if err != nil {
+		panic(err)
+	}
+
+	err = withConfigUpdater.Update()
 	if err != nil {
 		panic(err)
 	}
