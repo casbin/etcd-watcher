@@ -85,6 +85,7 @@ func NewWatcherWithConfig(config WatcherConfig) (persist.Watcher, error) {
 	w := &Watcher{}
 	w.running = true
 	w.callback = nil
+	w.keyName = config.Key
 	w.conf = &config
 
 	// Create the client.
