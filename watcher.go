@@ -35,6 +35,16 @@ type Watcher struct {
 	keyName     string
 	password    string
 	lastSentRev int64
+	conf        *WatcherConfig
+}
+
+type WatcherConfig struct {
+	Hosts                []string
+	Key                  string `json:",default=casbin_watcher"`
+	User                 string
+	Pass                 string
+	DialKeepAliveTimeout time.Duration `json:",default=10"`
+	DialTimeout          time.Duration `json:",default=30"`
 }
 
 // finalizer is the destructor for Watcher.
@@ -70,6 +80,30 @@ func NewWatcher(endpoints []string, keyName string, password ...string) (persist
 	return w, nil
 }
 
+// NewWatcherWithConfig is a configurable Watcher constructor
+func NewWatcherWithConfig(config WatcherConfig) (persist.Watcher, error) {
+	w := &Watcher{}
+	w.running = true
+	w.callback = nil
+	w.keyName = config.Key
+	w.conf = &config
+
+	// Create the client.
+	err := w.createClient()
+	if err != nil {
+		return nil, err
+	}
+
+	// Call the destructor when the object is released.
+	runtime.SetFinalizer(w, finalizer)
+
+	go func() {
+		_ = w.startWatch()
+	}()
+
+	return w, nil
+}
+
 // Close closes the Watcher.
 func (w *Watcher) Close() {
 	finalizer(w)
@@ -82,6 +116,17 @@ func (w *Watcher) createClient() error {
 		DialKeepAliveTimeout: time.Second * 10,
 		DialTimeout:          time.Second * 30,
 		Password:             w.password,
+	}
+
+	if w.conf != nil {
+		cfg = client.Config{
+			Endpoints: w.conf.Hosts,
+			// set timeout per request to fail fast when the target endpoints is unavailable
+			DialTimeout:          time.Second * w.conf.DialTimeout,
+			DialKeepAliveTimeout: time.Second * w.conf.DialKeepAliveTimeout,
+			Username:             w.conf.User,
+			Password:             w.conf.Pass,
+		}
 	}
 
 	c, err := client.New(cfg)
