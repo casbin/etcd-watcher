@@ -45,6 +45,49 @@ func main() {
 }
 ```
 
+## Simple Example（Configuration Mode）
+
+```go
+package main
+
+import (
+    "log"
+
+    casbin "github.com/casbin/casbin/v2"
+    etcdwatcher "github.com/casbin/etcd-watcher/v2"
+)
+
+func updateCallback(rev string) {
+    log.Println("New revision detected:", rev)
+}
+
+func main() {
+    // Initialize the watcher.
+    // Use the configuration file as the parameter
+	w, _ := etcdwatcher.NewWatcherWithConfig(etcdwatcher.WatcherConfig{
+		Hosts: []string{"http://127.0.0.1:2379"},
+		Key:   "/casbin",
+		User:  "root",
+		Pass:  "123",
+	})
+    
+    // Initialize the enforcer.
+    e, _ := casbin.NewEnforcer("examples/rbac_model.conf", "examples/rbac_policy.csv")
+    
+    // Set the watcher for the enforcer.
+    e.SetWatcher(w)
+    
+    // By default, the watcher's callback is automatically set to the
+    // enforcer's LoadPolicy() in the SetWatcher() call.
+    // We can change it by explicitly setting a callback.
+    w.SetUpdateCallback(updateCallback)
+    
+    // Update the policy to test the effect.
+    // You should see "[New revision detected: X]" in the log.
+    e.SavePolicy()
+}
+```
+
 ## Getting Help
 
 - [Casbin](https://github.com/casbin/casbin)
