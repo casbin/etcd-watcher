@@ -164,6 +164,14 @@ func (w *Watcher) Update() error {
 func (w *Watcher) startWatch() error {
 	watcher := w.client.Watch(context.Background(), w.keyName)
 	for res := range watcher {
+		// Skip progress notifications
+		if res.IsProgressNotify() {
+			continue
+		}
+		// Skip empty events
+		if len(res.Events) == 0 {
+			continue
+		}
 		t := res.Events[0]
 		if t.IsCreate() || t.IsModify() {
 			w.lock.RLock()
