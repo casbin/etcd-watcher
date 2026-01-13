@@ -1,5 +1,13 @@
-Etcd Watcher [![Go](https://github.com/casbin/etcd-watcher/actions/workflows/test.yml/badge.svg)](https://github.com/casbin/etcd-watcher/actions/workflows/test.yml) [![Coverage Status](https://coveralls.io/repos/github/casbin/etcd-watcher/badge.svg?branch=master)](https://coveralls.io/github/casbin/etcd-watcher?branch=master) [![Godoc](https://godoc.org/github.com/casbin/etcd-watcher?status.svg)](https://godoc.org/github.com/casbin/etcd-watcher)
+Etcd Watcher
 ====
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/casbin/etcd-watcher)](https://goreportcard.com/report/github.com/casbin/etcd-watcher)
+[![Go](https://github.com/casbin/etcd-watcher/actions/workflows/ci.yml/badge.svg)](https://github.com/casbin/etcd-watcher/actions/workflows/ci.yml)
+[![Coverage Status](https://coveralls.io/repos/github/casbin/etcd-watcher/badge.svg?branch=master)](https://coveralls.io/github/casbin/etcd-watcher?branch=master)
+[![Go Reference](https://pkg.go.dev/badge/github.com/casbin/etcd-watcher/v2.svg)](https://pkg.go.dev/github.com/casbin/etcd-watcher/v2)
+[![Release](https://img.shields.io/github/release/casbin/etcd-watcher.svg)](https://github.com/casbin/etcd-watcher/releases/latest)
+[![Discord](https://img.shields.io/discord/1022748306096537660?logo=discord&label=discord&color=5865F2)](https://discord.gg/S5UjpzGZjN)
+[![Sourcegraph](https://sourcegraph.com/github.com/casbin/etcd-watcher/-/badge.svg)](https://sourcegraph.com/github.com/casbin/etcd-watcher?badge)
 
 Etcd Watcher is the [Etcd](https://github.com/coreos/etcd) watcher for [Casbin](https://github.com/casbin/casbin). With this library, Casbin can synchronize the policy with the database in multiple enforcer instances.
 
